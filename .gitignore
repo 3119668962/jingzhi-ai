@@ -1,0 +1,18 @@
+# 依赖
+node_modules/
+
+# 构建与打包产物
+dist/
+release/
+out/
+
+# 随包附带的本地运行时（体积大，不纳入版本管理）
+.runtime/
+*.zip
+
+# 日志与编辑器
+*.log
+npm-debug.log*
+.DS_Store
+.vscode/
+.idea/
