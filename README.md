@@ -6,9 +6,11 @@
 
 ## 直接使用（无需开发环境）
 
-在 [Releases](../../releases) 页面下载 Windows 便携版：
+在 [Releases](https://github.com/3119668962/jingzhi-ai/releases/latest) 页面下载 Windows 便携版：
 
-- `竞智AI-1.0.0-便携版.exe`（Windows x64，双击即可运行，无需安装）
+- `jingzhi-ai-1.0.0-portable-win-x64.exe`（Windows x64，106 MB，双击即可运行，无需安装）
+
+> 注：GitHub 对文件名中的非 ASCII 字符会做过滤，因此发布资产使用英文文件名，应用内的产品名仍为「竞智AI」。
 
 ## 功能概览
 
