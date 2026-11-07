@@ -567,7 +567,7 @@ export default function CompetitionDetail({
             )}
           </section>
 
-          <SourceNotice compact />
+          <SourceNotice compact custom={item.isCustom} />
         </aside>
       </div>
     </div>

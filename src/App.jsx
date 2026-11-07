@@ -4,6 +4,7 @@ import { Sidebar, Topbar } from './components/Shell';
 import { Logo } from './components/ui';
 import { api } from './lib/bridge';
 import { rankCompetitions, getScheduleWarnings } from './lib/matcher';
+import { COMPETITIONS, createCustomCompetition } from './data/competitions';
 import { DEMO_PROFILE, DEMO_SCHEDULES } from './data/profile';
 import Onboarding from './pages/Onboarding';
 import Dashboard from './pages/Dashboard';
@@ -20,6 +21,7 @@ const EMPTY_WORKSPACE = {
   userSchedules: [],
   planProgress: {},
   favorites: [],
+  userCompetitions: [],
 };
 
 export default function App() {
@@ -55,6 +57,7 @@ export default function App() {
           userSchedules: Array.isArray(safeState.userSchedules) ? safeState.userSchedules : [],
           favorites: Array.isArray(safeState.favorites) ? safeState.favorites : [],
           planProgress: safeState.planProgress || {},
+          userCompetitions: Array.isArray(safeState.userCompetitions) ? safeState.userCompetitions : [],
         });
         setSettings(currentSettings);
         setAppInfo(info);
@@ -81,6 +84,7 @@ export default function App() {
         userSchedules: workspace.userSchedules,
         planProgress: workspace.planProgress,
         favorites: workspace.favorites,
+        userCompetitions: workspace.userCompetitions,
       });
     }, 360);
     return () => window.clearTimeout(timer);
@@ -93,6 +97,10 @@ export default function App() {
   }, [toast]);
 
   const profile = workspace.profile;
+  const competitions = useMemo(
+    () => [...COMPETITIONS, ...workspace.userCompetitions],
+    [workspace.userCompetitions],
+  );
 
   const ranked = useMemo(() => {
     if (!profile) return null;
@@ -100,8 +108,9 @@ export default function App() {
       profile,
       preferredMonths: profile.goals?.months,
       userSchedules: workspace.userSchedules,
+      competitions,
     });
-  }, [profile, workspace.userSchedules]);
+  }, [profile, workspace.userSchedules, competitions]);
 
   const conflicts = useMemo(() => {
     if (!profile) return [];
@@ -153,6 +162,7 @@ export default function App() {
       userSchedules: DEMO_SCHEDULES,
       planProgress: {},
       favorites: [],
+      userCompetitions: [],
     });
     setEditingProfile(false);
     setSelectedId(null);
@@ -192,6 +202,22 @@ export default function App() {
         favorites: exists ? current.favorites.filter((item) => item !== id) : [...current.favorites, id],
       };
     });
+  };
+
+  const addCustomCompetition = (details) => {
+    const name = String(details.name || '').trim();
+    const duplicate = competitions.some((item) => item.name.trim().toLocaleLowerCase() === name.toLocaleLowerCase());
+    if (duplicate) return { ok: false, error: '竞赛库中已存在同名赛事，请检查赛事名称。' };
+    const item = createCustomCompetition(
+      { ...details, id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 8)}` },
+      competitions.length + 1,
+    );
+    setWorkspace((current) => ({
+      ...current,
+      userCompetitions: [...current.userCompetitions, item],
+    }));
+    notify('自定义赛事已加入竞赛库，并参与智能匹配');
+    return { ok: true, item };
   };
 
   const addSchedule = (event) => {
@@ -287,7 +313,7 @@ export default function App() {
     null;
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${api.isDesktop ? 'is-desktop' : ''}`}>
       <Sidebar
         active={activeNav}
         onNavigate={navigate}
@@ -338,6 +364,7 @@ export default function App() {
                   profile={profile}
                   settings={settings}
                   userSchedules={workspace.userSchedules}
+                  competitions={competitions}
                   favorites={workspace.favorites}
                   onToggleFavorite={toggleFavorite}
                   onOpenCompetition={openCompetition}
@@ -352,12 +379,15 @@ export default function App() {
                   favorites={workspace.favorites}
                   onToggleFavorite={toggleFavorite}
                   onOpenCompetition={openCompetition}
+                  onAddCompetition={addCustomCompetition}
+                  customCount={workspace.userCompetitions.length}
                 />
               )}
               {view === 'schedule' && (
                 <Schedule
                   profile={profile}
                   events={workspace.userSchedules}
+                  competitions={competitions}
                   onAddSchedule={addSchedule}
                   onRemoveSchedule={removeSchedule}
                   onOpenCompetition={openCompetition}

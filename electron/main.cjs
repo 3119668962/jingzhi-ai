@@ -296,6 +296,7 @@ ipcMain.handle('state:load', () => {
     userSchedules: [],
     planProgress: {},
     favorites: [],
+    userCompetitions: [],
   });
 });
 

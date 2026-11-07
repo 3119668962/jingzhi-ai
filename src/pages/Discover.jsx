@@ -52,6 +52,7 @@ export default function Discover({
   profile,
   settings,
   userSchedules,
+  competitions,
   favorites,
   onToggleFavorite,
   onOpenCompetition,
@@ -89,8 +90,9 @@ export default function Discover({
         preferredMonths: applied.months,
         keyword: applied.keyword,
         userSchedules,
+        competitions,
       }),
-    [searchProfile, applied, userSchedules],
+    [searchProfile, applied, userSchedules, competitions],
   );
 
   const aiEnabled = Boolean(settings?.aiEnabled && settings?.hasAiKey);
@@ -249,6 +251,7 @@ export default function Discover({
       preferredMonths: draftMonths,
       keyword: keyword.trim(),
       userSchedules,
+      competitions,
     });
     notify(`匹配完成：${nextRanked.counts.matched} 项赛事进入推荐`, 'success');
     if (settings?.networkEnabled) runNetworkCheck(nextRanked.results);

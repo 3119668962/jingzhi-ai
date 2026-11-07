@@ -34,6 +34,7 @@ export const api = {
       userSchedules: [],
       planProgress: {},
       favorites: [],
+      userCompetitions: [],
     });
   },
 

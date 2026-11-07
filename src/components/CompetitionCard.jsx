@@ -145,6 +145,7 @@ export function DirectoryCard({ item, evaluation, onOpen, favorite, onToggleFavo
         </div>
         <div className="directory-badges">
           <CategoryBadge meta={item.categoryMeta} small />
+          {item.isCustom && <span className="custom-competition-badge">自定义</span>}
           <span className="catalog-no">#{String(item.no).padStart(2, '0')}</span>
         </div>
         {onToggleFavorite && (

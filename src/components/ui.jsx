@@ -309,10 +309,12 @@ export function CheckItem({ checked, onClick, children }) {
   );
 }
 
-export function SourceNotice({ compact = false }) {
+export function SourceNotice({ compact = false, custom = false }) {
   return (
     <p className={`source-notice ${compact ? 'is-compact' : ''}`}>
-      数据基础：2025 年教育部认可的全国大学生学科竞赛目录（84 项）。赛程为往届节奏参考，报名与资格要求请以赛事官网当年通知为准。
+      {custom
+        ? '该赛事由用户补充，赛事时间、参赛资格及其他信息尚未核验，请以赛事官方通知为准。'
+        : '数据基础：2025 年教育部认可的全国大学生学科竞赛目录（84 项）。赛程为往届节奏参考，报名与资格要求请以赛事官网当年通知为准。'}
     </p>
   );
 }

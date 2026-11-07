@@ -74,6 +74,7 @@ function emptyForm() {
 export default function Schedule({
   profile,
   events,
+  competitions = COMPETITIONS,
   onAddSchedule,
   onRemoveSchedule,
   onOpenCompetition,
@@ -99,8 +100,8 @@ export default function Schedule({
   const today = new Date().toISOString().slice(0, 10);
 
   const compLookup = useMemo(
-    () => Object.fromEntries(COMPETITIONS.map((item) => [item.id, item])),
-    [],
+    () => Object.fromEntries(competitions.map((item) => [item.id, item])),
+    [competitions],
   );
 
   const openModal = () => {
@@ -496,7 +497,7 @@ export default function Schedule({
             <span>关联赛事 <small>可选</small></span>
             <select value={form.compId} onChange={(event) => handleCompChange(event.target.value)}>
               <option value="">不关联目录赛事</option>
-              {COMPETITIONS.map((comp) => (
+              {competitions.map((comp) => (
                 <option value={comp.id} key={comp.id}>
                   #{String(comp.no).padStart(2, '0')} · {comp.name}
                 </option>

@@ -1,13 +1,22 @@
 import React, { useMemo, useState } from 'react';
-import { Library, Search, Star } from 'lucide-react';
+import { Library, Plus, Search, Star } from 'lucide-react';
 import { EmptyState, SourceNotice } from '../components/ui';
 import { DirectoryCard } from '../components/CompetitionCard';
-import { COMPETITION_CATEGORIES } from '../data/competitions';
+import AddCompetitionModal from '../components/AddCompetitionModal';
+import { COMPETITION_CATEGORIES, COMPETITIONS } from '../data/competitions';
 
-export default function Directory({ evaluations, favorites, onToggleFavorite, onOpenCompetition }) {
+export default function Directory({
+  evaluations,
+  favorites,
+  onToggleFavorite,
+  onOpenCompetition,
+  onAddCompetition,
+  customCount = 0,
+}) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('all');
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [addModalOpen, setAddModalOpen] = useState(false);
 
   const evaluationMap = useMemo(
     () => Object.fromEntries(evaluations.map((item) => [item.id, item])),
@@ -32,12 +41,13 @@ export default function Directory({ evaluations, favorites, onToggleFavorite, on
       <section className="directory-hero">
         <div className="directory-hero-copy">
           <span className="section-eyebrow">COMPETITION LIBRARY · 2025</span>
-          <h2>84 项赛事，一张完整的竞赛地图</h2>
+          <h2>探索赛事，搭建你的竞赛地图</h2>
           <p>
-            覆盖教育部认可的全国大学生学科竞赛目录，按类别、专业与兴趣自由探索。每一项都可查看赛事信息、匹配依据与备赛路线。
+            收录教育部认可的全国大学生学科竞赛目录，也可以把你找到的赛事加入本机竞赛库，参与个性化匹配与备赛规划。
           </p>
           <div className="directory-hero-stats">
-            <div><strong>84</strong><span>目录赛事</span></div>
+            <div><strong>{COMPETITIONS.length}</strong><span>目录赛事</span></div>
+            <div><strong>{customCount}</strong><span>自定义赛事</span></div>
             <div><strong>10</strong><span>赛事类别</span></div>
             <div><strong>{favorites.length}</strong><span>我的收藏</span></div>
           </div>
@@ -75,6 +85,10 @@ export default function Directory({ evaluations, favorites, onToggleFavorite, on
           <Star size={15} fill={favoritesOnly ? 'currentColor' : 'none'} />
           只看收藏
           <span>{favorites.length}</span>
+        </button>
+        <button type="button" className="btn btn-primary btn-small add-competition-button" onClick={() => setAddModalOpen(true)}>
+          <Plus size={14} />
+          添加赛事
         </button>
         <span className="directory-count">共 {filtered.length} 项</span>
       </div>
@@ -147,6 +161,11 @@ export default function Directory({ evaluations, favorites, onToggleFavorite, on
       )}
 
       <SourceNotice />
+      <AddCompetitionModal
+        open={addModalOpen}
+        onClose={() => setAddModalOpen(false)}
+        onAdd={onAddCompetition}
+      />
     </div>
   );
 }

@@ -198,6 +198,13 @@ function evaluateTime(comp, profile, preferredMonths, events = []) {
 function evaluateQualification(comp, profile) {
   const degree = profile?.degree || '本科';
   const group = getMajorGroup(profile?.major || '');
+  if (comp.isCustom) {
+    return {
+      score: 70,
+      eligible: true,
+      note: '该赛事由用户补充，学历、专业及报名资格尚未核验，请查看赛事官网确认',
+    };
+  }
   if (!comp.degrees.includes(degree)) {
     return {
       score: degree === '专科（高职）' || comp.degrees.includes('专科（高职）') ? 55 : 35,
@@ -401,10 +408,11 @@ export function rankCompetitions({
   preferredMonths,
   keyword = '',
   userSchedules = [],
+  competitions = COMPETITIONS,
   limit = null,
 } = {}) {
   const query = String(keyword || '').trim().toLowerCase();
-  const evaluations = COMPETITIONS.map((comp) =>
+  const evaluations = competitions.map((comp) =>
     evaluateCompetition(comp, profile, preferredMonths, userSchedules),
   )
     .filter((item) => {
@@ -421,7 +429,7 @@ export function rankCompetitions({
     all: evaluations,
     results: limit ? results.slice(0, limit) : results,
     counts: {
-      total: COMPETITIONS.length,
+      total: competitions.length,
       matched: results.length,
       strong: results.filter((item) => item.total >= 80).length,
       conflicts: results.filter((item) => item.conflicts.length).length,

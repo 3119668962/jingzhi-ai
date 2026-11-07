@@ -1063,6 +1063,93 @@ export const COMPETITION_CATEGORIES = Object.entries(CATEGORY_META).map(([id, me
   count: COMPETITIONS.filter((item) => item.category === id).length,
 }));
 
+const CUSTOM_CATEGORY_FIELDS = {
+  innovation: ['innovation'],
+  computer: ['cs'],
+  engineering: ['engineering'],
+  science: ['science'],
+  design: ['design'],
+  business: ['business'],
+  medicine: ['medicine'],
+  humanities: ['humanities'],
+  agriculture: ['agriculture'],
+  vocational: ['vocational'],
+};
+
+const CUSTOM_CATEGORY_SKILLS = {
+  innovation: ['business', 'presentation', 'teamwork', 'execution'],
+  computer: ['programming', 'algorithms', 'ai', 'teamwork'],
+  engineering: ['engineering', 'systems', 'programming', 'execution'],
+  science: ['research', 'math', 'writing', 'teamwork'],
+  design: ['design', 'media', 'presentation', 'execution'],
+  business: ['business', 'writing', 'presentation', 'teamwork'],
+  medicine: ['research', 'teamwork', 'writing', 'presentation'],
+  humanities: ['writing', 'english', 'presentation', 'research'],
+  agriculture: ['research', 'engineering', 'teamwork', 'execution'],
+  vocational: ['engineering', 'execution', 'teamwork', 'programming'],
+};
+
+export function createCustomCompetition(input, no) {
+  const category = CATEGORY_META[input.category] ? input.category : 'innovation';
+  const defaults = CATEGORY_DEFAULTS[category];
+  const fields = CUSTOM_CATEGORY_FIELDS[category];
+  const tags = [...new Set((input.tags || []).map((tag) => tag.trim()).filter(Boolean))].slice(0, 10);
+  const short = String(input.name || '').trim().slice(0, 18);
+  const regMonths = input.regMonths?.length ? input.regMonths : defaults.regMonths;
+  const eventMonths = input.eventMonths?.length ? input.eventMonths : defaults.eventMonths;
+  const skills = parseSkills(CUSTOM_CATEGORY_SKILLS[category].map((skill) => `${skill}:3`));
+  const tracks = (DEFAULT_TRACKS[category] || []).map((track) => ({
+    ...track,
+    skills: track.skills.filter((skill) => SKILLS.some((item) => item.id === skill)),
+  }));
+  const registration = `${monthsText(regMonths)}（用户录入）`;
+  const season = `${monthsText(regMonths)}报名 · ${monthsText(eventMonths)}比赛（用户录入）`;
+  const requirements = String(input.requirements || '').trim() || '参赛对象及资格要求尚未核实，请以赛事官方通知为准。';
+
+  return {
+    id: input.id,
+    no,
+    name: String(input.name || '').trim(),
+    short,
+    category,
+    categoryMeta: CATEGORY_META[category],
+    fields,
+    fieldsText: fields.map((field) => FIELD_LABELS[field]).join(' / '),
+    open: false,
+    website: String(input.website || '').trim(),
+    organizer: String(input.organizer || '').trim() || '用户补充，待核实',
+    intro: String(input.intro || '').trim() || `${short}由用户添加，赛事信息请以官方通知为准。`,
+    description: String(input.description || '').trim() || `${short}的赛事信息由用户整理，具体赛制、报名方式及地点请以赛事官网当年发布为准。`,
+    tags,
+    skills,
+    certHints: [],
+    regMonths,
+    eventMonths,
+    registration,
+    season,
+    prepWeeks: defaults.prepWeeks,
+    difficulty: defaults.difficulty,
+    development: defaults.development,
+    team: String(input.team || '').trim() || defaults.team,
+    format: String(input.format || '').trim() || '团队赛',
+    mode: String(input.mode || '').trim() || defaults.mode,
+    location: String(input.location || '').trim() || defaults.location,
+    degrees: ['专科（高职）', '本科', '硕士', '博士'],
+    restrictedFields: [],
+    eligibility: requirements,
+    requirements,
+    highlights: ['赛事信息由用户添加，尚未经过官方核验', '报名时间与比赛安排仅供参考'],
+    timeNote: '用户录入的赛程月份仅供规划参考，请以赛事官网当年通知为准。',
+    contact: '',
+    tracks,
+    trainingFocus: ['核对赛事官网及报名资格', '补齐赛项核心能力', '制定分阶段训练目标', '按当年规则完成报名与材料复核'],
+    cautions: ['此赛事由用户添加，关键信息尚未经过官方核验'],
+    source: '用户添加 · 赛事信息待核实',
+    dataYear: null,
+    isCustom: true,
+  };
+}
+
 export function getCompetitionById(id) {
   return COMPETITIONS.find((item) => item.id === id) || null;
 }
