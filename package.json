@@ -1,7 +1,7 @@
 {
   "name": "jingzhi-ai",
   "productName": "竞智AI",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "大学生个性化竞赛智能推荐与成长规划平台",
   "private": true,
   "main": "electron/main.cjs",
